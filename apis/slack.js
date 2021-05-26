@@ -9,7 +9,7 @@ slackApiRoute.post('/',(req,res)=>{
     console.log(req.body);
 
     const msg={
-        to:'tejaswi.koya25@gmail.com',
+        to:'sairamgundala2000@gmail.com',
         from:'sairamgundala2000@hackevolve.com',
         subject:'reply',
         text:req.body.text,
