@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/drakcoder/xyz#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.4.4",
     "axios": "^0.21.1",
     "express": "^4.17.1",
     "mongoose": "^5.12.11",
