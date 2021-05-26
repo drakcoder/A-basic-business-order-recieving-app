@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/drakcoder/xyz/issues"
   },
-  "homepage": "https://github.com/drakcoder/xyz#readme"
+  "homepage": "https://github.com/drakcoder/xyz#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.11",
+    "multer": "^1.4.2",
+    "nodemon": "^2.0.7",
+    "slackbots": "^1.2.0"
+  }
 }
