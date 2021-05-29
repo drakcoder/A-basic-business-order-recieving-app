@@ -5,7 +5,7 @@ slackApiRoute=express.Router();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-slackApiRoute.post('/',(req,res)=>{
+slackApiRoute.post('/send',(req,res)=>{
     console.log(req.body);
 
     const msg={
@@ -21,6 +21,12 @@ slackApiRoute.post('/',(req,res)=>{
         console.log(err);
     })
     res.send(req.body.text)
+})
+
+slackApiRoute.get('/download',(req,res)=>{
+    code=req.query.code;
+    console.log(code);
+    res.send('sent')
 })
 
 
