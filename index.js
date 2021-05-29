@@ -1,7 +1,9 @@
 const express=require('express');
 const axios=require('axios');
+require('dotenv').config();
 const slackApiRoute=require('./apis/slack.js');
 const sendgridApiRoute=require('./apis/sendgrid.js');
+
 
 
 const app=express();
