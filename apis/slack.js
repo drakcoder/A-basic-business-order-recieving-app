@@ -32,22 +32,26 @@ slackApiRoute.get('/download',(req,res)=>{
     params.append('client_id','2105721110720.2098371606609');
     params.append('client_secret','aacb67f8122d0c5278d792835623fb88');
     params.append('code',code);
-    params.append('redirect_uri','https://b5a683b1134b.ngrok.io/slack/download');
+    params.append('redirect_uri','https://a03349211b93.ngrok.io/slack/download');
     const config={
         headers : {
             'Content-Type':'application/x-www-form-urlencoded'
         }
     }
-    axios.post(url,params,config)
+    result=axios.post(url,params,config)
         .then((result)=>{
-            console.log(result.data);
+            console.log(result.data)
         })
         .catch((err)=>{
             console.log('ERR')
             console.log(err)
         })
+    
     res.send('sent')
+
 })
+
+
 
 
 
