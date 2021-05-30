@@ -5,22 +5,21 @@ require('dotenv').config();
 const slackApiRoute=require('./apis/slack.js');
 const sendgridApiRoute=require('./apis/sendgrid.js');
 
-// mongoose.connect('mongodb://localhost:27017/SMB',{useNewUrlParser:true,useUnifiedTopology:true},(client,err)=>{
-//     if(err){
-//         console.log(err);
-//     }
-//     else{
-//         console.log('connected to db');
-//     }
-// })
-
-
+mongoose.connect('mongodb://localhost:27017/SMB',{useNewUrlParser:true,useUnifiedTopology:true})
+    .then((client)=>{
+        console.log('connected to db');
+        db=mongoose.connection;
+        app.locals.databaseObject=db;
+    })
+    .catch((err)=>{
+        console.log('ERR');
+        console.log(err);
+    })
 
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
-// app.use('/send',slackApiRoute);
 app.use('/receive',sendgridApiRoute);
 app.use('/slack',slackApiRoute)
 
