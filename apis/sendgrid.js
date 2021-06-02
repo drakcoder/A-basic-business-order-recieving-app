@@ -1,25 +1,104 @@
 const express=require('express');
 const axios=require('axios');
 const multer=require('multer');
+const mongoose=require('mongoose');
 
 const upload=multer();
 sendgridApiRoute=express.Router();
 const slackToken=process.env.SLACK_TOKEN;
 
-sendgridApiRoute.post('/',upload.any(),async (req,res)=>{
+const channelSchema = new mongoose.Schema({
+    team_id: String,
+    channel_id: String,
+    channel_name: String,
+})
+
+const channelModel=mongoose.model('channelModel',channelSchema);
+
+sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
     text=req.body.text;
+    body=req.body;
+    db=req.app.locals.databaseObject;
+    const email=(body.to).toLowerCase();
+    const url='https://slack.com/api/chat.postMessage';
+    db.findOne({'emails':body.to})
+        .then((obj)=>{
+            if(obj==null){
+                console.log('account not registered')
+            }
+            else{
+                // console.log(obj);
+                const envelope=JSON.parse(body.envelope);
+                const email=envelope.from;
+                const rawname=email.split('@')[0];
+                const domain=email.split('@')[1];
+                var name=rawname.replace(/[^\w\s]/gi, '')+domain.split('.')[0];
+                
+
+                db.findOne({'channels':obj})
+                    .then((subdoc)=>{
+                        if(subdoc==null){
+                            const envelope=JSON.parse(body.envelope);
+                            const email=envelope.from;
+                            const rawname=email.split('@')[0];
+                            const domain=email.split('@')[1];
+                            var name=rawname.replace(/[^\w\s]/gi, '')+domain.split('.')[0];
+                            console.log(name);
+                            const url='https://slack.com/api/conversations.create';
+                            const params=new URLSearchParams();
+                            params.append('token',obj.access_token);
+                            params.append('name',name);
+                            params.append('is_private',false);
+                            params.append('team_id',obj.team_id);
+                            const config={
+                                headers:{
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }
+                            }
+                            axios.post(url,params,config)
+                                .then((channelObj)=>{
+                                    // console.log(channelObj.data);
+                                    data=(channelObj.data.channel);
+                                    const record=new channelModel({
+                                        team_id:obj.team_id,
+                                        channel_id:data.id,
+                                        channel_name:data.name,
+                                    });
+                                    console.log(record);
+                                    const id=obj._id;
+                                    db.updateOne({_id:id},{$push : {channels:record}},{upsert:true})
+                                        .then((result)=>{
+                                            console.log('success');
+                                        })
+                                        .catch((err)=>{
+                                            console.log(err);
+                                        })
+                                })
+                                .catch((err)=>{
+                                    console.log(err);
+                                })
+                        }
+                    })
+                    .catch((err)=>{
+                        console.log('ERR: '+err);
+                    })
+            }
+        })
+        .catch((err)=>{
+            console.log('ERR: '+err);
+        })
     send(text).catch(err=>console.log(err));
-    console.log(req.body.text);
+    // console.log(req.body);
     res.send('sent');
 })
 
 async function send(text){
     const url='https://slack.com/api/chat.postMessage';
     const res=await axios.post(url,{
-        channel:'#test',
+        channel:'#hello',
         text:text,
     },{headers:{ authorization : `Bearer ${slackToken}`}});
-    console.log('sent');
+    // console.log('sent');
 };
 
 module.exports=sendgridApiRoute;

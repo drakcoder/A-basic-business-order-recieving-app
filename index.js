@@ -9,6 +9,7 @@ mongoose.connect('mongodb://localhost:27017/SMB',{useNewUrlParser:true,useUnifie
     .then((client)=>{
         console.log('connected to db');
         db=mongoose.connection;
+        db=db.collection('SMB');
         app.locals.databaseObject=db;
     })
     .catch((err)=>{
@@ -20,7 +21,7 @@ const app=express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
-app.use('/receive',sendgridApiRoute);
+app.use('/sendgrid',sendgridApiRoute);
 app.use('/slack',slackApiRoute)
 
 app.listen(3000,()=>{

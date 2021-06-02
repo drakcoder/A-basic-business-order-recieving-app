@@ -1,3 +1,4 @@
 sendgrid.env
 slack.env
 .env
+json_formats.txt
