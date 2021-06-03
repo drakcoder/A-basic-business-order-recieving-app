@@ -34,7 +34,7 @@ sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
                 const rawname=email.split('@')[0];
                 const domain=email.split('@')[1];
                 const name=rawname.replace(/[^\w\s]/gi, '')+domain.split('.')[0];
-                db.findOne({'channels.channel_name':name})
+                db.findOne({$and: [{'channels.channel_name':name},{'emails':body.to}]})
                     .then((subdoc)=>{
                         if(subdoc==null){
                             console.log(name);

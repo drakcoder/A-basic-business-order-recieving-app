@@ -9,6 +9,7 @@ const channelSchema = new mongoose.Schema({
     team_id: String,
     channel_id: String,
     channel_name: String,
+    email: String,
 })
 
 const slackWorkspaceSchema= new mongoose.Schema({
@@ -26,24 +27,60 @@ const workspaceModel= mongoose.model('workspaceDB',slackWorkspaceSchema);
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 slackApiRoute.post('/send',(req,res)=>{
-    console.log(req.body);
+    const body=req.body;
     db=req.app.locals.databaseObject;
-    const msg={
-        to:'sairamgundala2000@gmail.com',
-        from:'sairamgundala2000@hackevolve.com',
-        subject:'reply',
-        text:req.body.text,
-    }
-    sgMail.send(msg).then(()=>{
-        console.log('email sent');
-    })
-    .catch((err)=>{
-        console.log(err);
-    })
-    res.send(req.body.text)
+    db.findOne({'team_id':body.team_id})
+        .then((doc)=>{
+            if(doc==null){
+                console.log('please register with the site first');
+            }
+            else{
+                var subdoc;
+                for(i of doc.channels){
+                    if(i.channel_id==body.channel_id){
+                        subdoc=i;
+                        break;
+                    }
+                }
+                const msg={
+                    to: subdoc.email,
+                    from: 'test@hackevolve.com',
+                    subject: 'test',
+                    replyTo: subdoc.email,
+                    text: body.text,
+                }
+                sgMail.send(msg)
+                    .then(()=>{
+                        console.log('email sent');
+                    })
+                    .catch((err)=>{
+                        console.log('Sendgrid ERR');
+                        console.log(err);
+                    })
+            }
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+        res.send(body.text);
+    // const msg={
+    //     to:'sairamgundala2000@gmail.com',
+    //     from:'test@hackevolve.com',
+    //     subject:'test',
+    //     replyTo:'sairamgundala2000@gmail.com',
+    //     text:req.body.text,
+    // }
+    // sgMail.send(msg).then(()=>{
+    //     console.log('email sent');
+    // })
+    // .catch((err)=>{
+    //     console.log(err);
+    // })
+    // res.send(req.body.text)
 })
 
 slackApiRoute.get('/download',(req,res)=>{
+    db=req.app.locals.databaseObject;
     code=req.query.code;
     console.log(code);
     const url="https://slack.com/api/oauth.access";
