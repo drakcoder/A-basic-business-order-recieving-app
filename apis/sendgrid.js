@@ -11,6 +11,7 @@ const channelSchema = new mongoose.Schema({
     team_id: String,
     channel_id: String,
     channel_name: String,
+    email: String,
 })
 
 const channelModel=mongoose.model('channelModel',channelSchema);
@@ -32,17 +33,10 @@ sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
                 const email=envelope.from;
                 const rawname=email.split('@')[0];
                 const domain=email.split('@')[1];
-                var name=rawname.replace(/[^\w\s]/gi, '')+domain.split('.')[0];
-                
-
-                db.findOne({'channels':obj})
+                const name=rawname.replace(/[^\w\s]/gi, '')+domain.split('.')[0];
+                db.findOne({'channels.channel_name':name})
                     .then((subdoc)=>{
                         if(subdoc==null){
-                            const envelope=JSON.parse(body.envelope);
-                            const email=envelope.from;
-                            const rawname=email.split('@')[0];
-                            const domain=email.split('@')[1];
-                            var name=rawname.replace(/[^\w\s]/gi, '')+domain.split('.')[0];
                             console.log(name);
                             const url='https://slack.com/api/conversations.create';
                             const params=new URLSearchParams();
@@ -63,8 +57,9 @@ sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
                                         team_id:obj.team_id,
                                         channel_id:data.id,
                                         channel_name:data.name,
+                                        email:email,
                                     });
-                                    console.log(record);
+                                    // console.log(record);
                                     const id=obj._id;
                                     db.updateOne({_id:id},{$push : {channels:record}},{upsert:true})
                                         .then((result)=>{
@@ -73,11 +68,17 @@ sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
                                         .catch((err)=>{
                                             console.log(err);
                                         })
+                                    send(text,name,obj.access_token).catch(err=>{console.log(err)});
+                                    
                                 })
                                 .catch((err)=>{
                                     console.log(err);
                                 })
                         }
+                        else{
+                            send(text,name,obj.access_token).catch(err=>{console.log(err)});
+                        }
+                        
                     })
                     .catch((err)=>{
                         console.log('ERR: '+err);
@@ -87,18 +88,19 @@ sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
         .catch((err)=>{
             console.log('ERR: '+err);
         })
-    send(text).catch(err=>console.log(err));
-    // console.log(req.body);
+    
     res.send('sent');
 })
 
-async function send(text){
+async function send(text,channelname,token){
     const url='https://slack.com/api/chat.postMessage';
+    channelname='#'+channelname;
+    console.log(channelname);
     const res=await axios.post(url,{
-        channel:'#hello',
+        channel:channelname,
         text:text,
-    },{headers:{ authorization : `Bearer ${slackToken}`}});
-    // console.log('sent');
+    },{headers:{ authorization : `Bearer ${token}`}});
+    console.log('sent');
 };
 
 module.exports=sendgridApiRoute;
