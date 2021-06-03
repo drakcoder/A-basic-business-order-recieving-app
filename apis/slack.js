@@ -63,20 +63,6 @@ slackApiRoute.post('/send',(req,res)=>{
             console.log(err);
         })
         res.send(body.text);
-    // const msg={
-    //     to:'sairamgundala2000@gmail.com',
-    //     from:'test@hackevolve.com',
-    //     subject:'test',
-    //     replyTo:'sairamgundala2000@gmail.com',
-    //     text:req.body.text,
-    // }
-    // sgMail.send(msg).then(()=>{
-    //     console.log('email sent');
-    // })
-    // .catch((err)=>{
-    //     console.log(err);
-    // })
-    // res.send(req.body.text)
 })
 
 slackApiRoute.get('/download',(req,res)=>{
