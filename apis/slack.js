@@ -44,7 +44,7 @@ slackApiRoute.post('/send',(req,res)=>{
                 }
                 const msg={
                     to: subdoc.email,
-                    from: 'test@hackevolve.com',
+                    from: doc.emails,
                     subject: 'test',
                     replyTo: subdoc.email,
                     text: body.text,
@@ -55,7 +55,7 @@ slackApiRoute.post('/send',(req,res)=>{
                     })
                     .catch((err)=>{
                         console.log('Sendgrid ERR');
-                        console.log(err);
+                        console.log(err.response.body);
                     })
             }
         })
