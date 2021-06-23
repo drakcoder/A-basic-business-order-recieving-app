@@ -4,6 +4,7 @@ const mongoose=require('mongoose')
 require('dotenv').config();
 const slackApiRoute=require('./apis/slack.js');
 const sendgridApiRoute=require('./apis/sendgrid.js');
+const whatsappApiRoute=require('./apis/whatsapp.js');
 
 mongoose.connect('mongodb://localhost:27017/SMB',{useNewUrlParser:true,useUnifiedTopology:true})
     .then((client)=>{
@@ -23,6 +24,7 @@ app.use(express.urlencoded({extended:true}))
 
 app.use('/sendgrid',sendgridApiRoute);
 app.use('/slack',slackApiRoute)
+app.use('/whatsapp',whatsappApiRoute);
 
 app.listen(3000,()=>{
     console.log('listening to port 3000');

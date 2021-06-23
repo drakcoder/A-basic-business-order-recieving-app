@@ -19,6 +19,7 @@ const slackWorkspaceSchema= new mongoose.Schema({
     enterprise_id: String,
     team_name: String,
     emails: String,
+    number: String,
     channels: [channelSchema],
 });
 
@@ -74,7 +75,7 @@ slackApiRoute.get('/download',(req,res)=>{
     params.append('client_id',process.env.CLIENT_ID);
     params.append('client_secret',process.env.CLIENT_SECRET);
     params.append('code',code);
-    params.append('redirect_uri','https://54f16ed4a72f.ngrok.io/slack/download');
+    params.append('redirect_uri','https://041ad644e016.ngrok.io/slack/download');
     const config={
         headers : {
             'Content-Type':'application/x-www-form-urlencoded'
@@ -90,6 +91,7 @@ slackApiRoute.get('/download',(req,res)=>{
                 enterprise_id:result.data.enterprise_id,
                 team_name:result.data.team_name,
                 emails:"test@parse.hackevolve.com",
+                number:"+14155238886",
                 channels:[]
             });
             console.log(record);

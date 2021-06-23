@@ -12,6 +12,7 @@ const channelSchema = new mongoose.Schema({
     channel_id: String,
     channel_name: String,
     email: String,
+    number: String,
 })
 
 const channelModel=mongoose.model('channelModel',channelSchema);
@@ -58,6 +59,7 @@ sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
                                         channel_id:data.id,
                                         channel_name:data.name,
                                         email:email,
+                                        number:null,
                                     });
                                     // console.log(record);
                                     const id=obj._id;
@@ -104,3 +106,4 @@ async function send(text,channelname,token){
 };
 
 module.exports=sendgridApiRoute;
+module.exports=mongoose.model('channelModel',channelSchema);
