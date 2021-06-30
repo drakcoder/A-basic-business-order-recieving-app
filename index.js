@@ -5,8 +5,9 @@ require('dotenv').config();
 const slackApiRoute=require('./apis/slack.js');
 const sendgridApiRoute=require('./apis/sendgrid.js');
 const whatsappApiRoute=require('./apis/whatsapp.js');
+const dbulr=process.env.MONGO_DB_URL;
 
-mongoose.connect('mongodb://localhost:27017/SMB',{useNewUrlParser:true,useUnifiedTopology:true})
+mongoose.connect(dbulr,{useNewUrlParser:true,useUnifiedTopology:true})
     .then((client)=>{
         console.log('connected to db');
         db=mongoose.connection;
