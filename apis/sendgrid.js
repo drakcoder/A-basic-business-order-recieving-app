@@ -17,7 +17,10 @@ const channelSchema = new mongoose.Schema({
 
 const channelModel=mongoose.model('channelModel',channelSchema);
 
-sendgridApiRoute.post('/receive',upload.any(),async (req,res)=>{
+
+
+sendgridApiRoute.post('/receive', upload.any(), (req,res)=>{
+    console.log("abcd");
     text=req.body.text;
     body=req.body;
     db=req.app.locals.databaseObject;
@@ -105,5 +108,7 @@ async function send(text,channelname,token){
     console.log('sent');
 };
 
-module.exports=sendgridApiRoute;
-module.exports=mongoose.model('channelModel',channelSchema);
+module.exports = {
+    sendgridApiRoute,
+    'channelModel': channelModel
+}

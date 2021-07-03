@@ -33,7 +33,7 @@ slackApiRoute.post('/send',(req,res)=>{
     db.findOne({'team_id':body.team_id})
         .then((doc)=>{
             if(doc==null){
-                console.log('please register with the site first');
+                console.log('not registered');
             }
             else{
                 var subdoc;
@@ -47,7 +47,6 @@ slackApiRoute.post('/send',(req,res)=>{
                     to: subdoc.email,
                     from: doc.emails,
                     subject: 'test',
-                    replyTo: subdoc.email,
                     text: body.text,
                 }
                 sgMail.send(msg)
